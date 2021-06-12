@@ -33,6 +33,19 @@ func saveText(_ textData: String, _ fileName: String) {
     }
 }
 
+// P. 277
+func loadText(_ fileName: String) -> String? {
+    guard let url = docURL(fileName) else {
+        return nil
+    }
+    do {
+        let textData = try String(contentsOf: url, encoding: .utf8)
+        return textData
+    } catch {
+        return nil
+    }
+}
+
 // P. 275
 func docURL(_ fileName: String) -> URL? {
     let fileManager = FileManager.default
@@ -50,10 +63,7 @@ func docURL(_ fileName: String) -> URL? {
 }
 
 struct ContentView: View {
-    @State private var theText: String = """
-Hello world
-Hello world
-"""
+    @State private var theText: String = ""
     
     var body: some View {
         NavigationView {
@@ -63,12 +73,21 @@ Hello world
                 .padding([.leading, .bottom, .trailing])
                 .navigationTitle("メモ")
                 .toolbar {
+                    // P. 276
+                    ToolbarItem(placement:.navigationBarTrailing) {
+                        Button {
+                            if let data = loadText("sample.txt") {
+                                theText = data
+                            }
+                        } label: {
+                            Text("読み込み")
+                        }
+                    }
                     ToolbarItem(placement: .navigationBarTrailing) {
                         Button {
                             // キーボードを下げる処理
                             UIApplication.shared.endEditing()
-                            
-                            // saveText(theText, "sample.txt")
+                            saveText(theText, "sample.txt")
                         } label : {
                             Text("保存")
                         }
